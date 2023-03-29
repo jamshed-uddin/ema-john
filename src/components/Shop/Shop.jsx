@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
+import { addToDb, getShoppingCart } from "../../utilities/fakedb";
+import Cart from "../Cart/Cart";
 import Product from "../Product/Product";
 
 import "./Shop.css";
 const Shop = () => {
   const [products, setProducts] = useState([]);
   const [cart, setCart] = useState([]);
-  console.log(cart);
+  console.log("cart", cart);
 
   useEffect(() => {
     fetch("products.json")
@@ -13,9 +15,32 @@ const Shop = () => {
       .then((data) => setProducts(data));
   }, []);
 
+  useEffect(() => {
+    const savedCart = [];
+    console.log("products", products);
+    const storedCart = getShoppingCart();
+    console.log(storedCart);
+    for (const id in storedCart) {
+      console.log(id);
+      const addedProduct = products.find((product) => product.id === id);
+
+      if (addedProduct) {
+        const quantity = storedCart[id];
+
+        addedProduct.quantity = quantity;
+
+        savedCart.push(addedProduct);
+      }
+      console.log(addedProduct);
+    }
+    setCart(savedCart);
+  }, [products]);
+
+  //next
   const addToCartHandler = (product) => {
     const newCart = [...cart, product];
     setCart(newCart);
+    addToDb(product.id);
   };
   return (
     <>
@@ -30,17 +55,8 @@ const Shop = () => {
           ))}
         </div>
 
-        <div className="cart">
-          <h2>Order summary</h2>
-          <p>Selected item:{cart.length}</p>
-          <p>Total price:</p>
-          <p>Total shipping charges:</p>
-          <p>Tax:</p>
-          <h3>Grand total:</h3>
-          <div className="insideCart-btn">
-            <button>Clear cart</button>
-            <button>Review cart</button>
-          </div>
+        <div>
+          <Cart cart={cart}></Cart>
         </div>
       </div>
     </>
