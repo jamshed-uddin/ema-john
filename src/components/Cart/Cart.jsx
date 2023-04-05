@@ -10,6 +10,7 @@ import {
 const Cart = (props) => {
   const cart = props.cart;
   const clearCartHandler = props.clearCartHandler;
+
   // console.log(cart);
 
   let total = 0;
