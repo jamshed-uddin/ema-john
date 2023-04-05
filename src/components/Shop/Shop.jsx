@@ -1,5 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { addToDb, getShoppingCart } from "../../utilities/fakedb";
+import {
+  addToDb,
+  deleteShoppingCart,
+  getShoppingCart,
+} from "../../utilities/fakedb";
 import Cart from "../Cart/Cart";
 import Product from "../Product/Product";
 
@@ -7,7 +11,7 @@ import "./Shop.css";
 const Shop = () => {
   const [products, setProducts] = useState([]);
   const [cart, setCart] = useState([]);
-  console.log("cart", cart);
+  // console.log("cart", cart);
 
   useEffect(() => {
     fetch("products.json")
@@ -17,22 +21,27 @@ const Shop = () => {
 
   useEffect(() => {
     const savedCart = [];
-    console.log("products", products);
+    // console.log("products", products);
     const storedCart = getShoppingCart();
-    console.log(storedCart);
+    // console.log(storedCart);
+    // step 1 :get id of the added product
     for (const id in storedCart) {
-      console.log(id);
+      // console.log(id);
+      // step 2: get product from product state by using id
       const addedProduct = products.find((product) => product.id === id);
 
       if (addedProduct) {
+        // step 3: add quantity
         const quantity = storedCart[id];
 
         addedProduct.quantity = quantity;
-
+        // step 4: add the updated product to the cart
         savedCart.push(addedProduct);
       }
-      console.log(addedProduct);
+      // console.log(addedProduct);
     }
+
+    // step 5: add the new cart to the setCart state
     setCart(savedCart);
   }, [products]);
 
@@ -41,6 +50,11 @@ const Shop = () => {
     const newCart = [...cart, product];
     setCart(newCart);
     addToDb(product.id);
+  };
+
+  const clearCartHandler = () => {
+    setCart([]);
+    deleteShoppingCart();
   };
   return (
     <>
@@ -56,7 +70,7 @@ const Shop = () => {
         </div>
 
         <div>
-          <Cart cart={cart}></Cart>
+          <Cart clearCartHandler={clearCartHandler} cart={cart}></Cart>
         </div>
       </div>
     </>

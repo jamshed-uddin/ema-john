@@ -1,0 +1,8 @@
+.order-review {
+  display: grid;
+  grid-template-columns: 4fr 1fr;
+}
+
+.reviewed-section {
+  margin: 100px auto;
+}
